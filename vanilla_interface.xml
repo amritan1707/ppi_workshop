@@ -1,0 +1,33 @@
+<ROSETTASCRIPTS>
+        <SCOREFXNS>
+                <ScoreFunction name="sfxn_basic" weights="ref2015"/>
+                <ScoreFunction name="sfxn_basic_cst" weights="ref2015_cst" >
+                    <Reweight scoretype="coordinate_constraint" weight="1.0" />
+                </ScoreFunction>
+        </SCOREFXNS>
+        <RESIDUE_SELECTORS>
+        </RESIDUE_SELECTORS>
+        <TASKOPERATIONS>
+                <InitializeFromCommandline name="init_cmd" />
+                <ExtraRotamersGeneric name="erg" ex1="true" ex2="true" />
+        </TASKOPERATIONS>
+        <FILTERS>
+                <ScoreType name="f_total_score" score_type="total_score" scorefxn="sfxn_basic" threshold="100000"/>
+                <SSShapeComplementarity name="f_shape_comp" verbose="1" loops="1" helices="1" />
+        </FILTERS>
+        <MOVERS>
+                <InterfaceAnalyzerMover interface_sc="false" interface="A_B" name="IfaceAnalyzer" pack_input="false" pack_separated="1" packstat="1" scorefxn="sfxn_basic" tracer="false"/>
+                <FilterReportAsPoseExtraScoresMover filter_name="f_total_score" name="save_f_total_score" report_as="f_total-score"/>
+                <FastRelax name="fastrelax"
+                   scorefxn="sfxn_basic_cst"
+                   repeats="5"
+                   task_operations="init_cmd,erg" />
+        </MOVERS>
+        <PROTOCOLS>
+                <Add mover_name="fastrelax"/>
+                <Add mover_name="IfaceAnalyzer"/>
+                <Add filter="f_total_score"/>
+                <Add filter="f_shape_comp"/>
+
+        </PROTOCOLS>
+</ROSETTASCRIPTS>
